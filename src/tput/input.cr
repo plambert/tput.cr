@@ -1,4 +1,37 @@
 class Tput
+  class KeyInput
+    property char : Char? = nil
+    property key : Key? = nil
+    property sequence : Array(Char) = [] of Char
+    @end_of_input : Bool = false
+
+    def initialize(*, @char = nil, @key = nil)
+      if c = @char
+        @sequence << c
+      end
+    end
+
+    def finish
+      @end_of_input = true
+    end
+
+    def continue?
+      !@end_of_input
+    end
+
+    def <<(c : Char?)
+      @sequence << c if c
+    end
+
+    def key_or_char
+      @key || @char
+    end
+
+    def clear
+      @sequence.clear
+    end
+  end
+
   module Input
     include Crystallabs::Helpers::Logging
 
@@ -68,10 +101,6 @@ class Tput
         c = nil
       end
 
-      if c
-        yield << c
-      end
-
       if timeout && input.responds_to? :"read_timeout="
         input.read_timeout = nil
       end
@@ -79,22 +108,60 @@ class Tput
       c
     end
 
-    def listen(&block : Proc(Char, Key?, Array(Char), Nil))
+    def next_char(timeout : Bool = false, &)
+      if c = next_char(timeout)
+        yield c
+      end
+      c
+    end
+
+    # def next_key
+    #   with_raw_input do
+    #     sequence = [] of Char
+    #     while char = next_char { sequence }
+    # end
+
+    def listen(&block : Proc(KeyInput, Nil))
       with_raw_input do
-        sequence = [] of Char
-        while char = next_char { sequence }
-          key = nil
-          if char.control?
-            key = Key.read_control(char) { next_char(true) { sequence } }
+        while char = next_char
+          keyinput = KeyInput.new char: char
+          if keyinput.control?
+            keyinput.key = Key.read_control(char) { next_char(true) { |c| keyinput << c } }
           end
           begin
-            yield char, key, sequence.dup
-          rescue e : EndListenBlock
-            break
+            yield keyinput
+          rescue e : EndListen
+            keyinput.finish
           end
-          sequence.clear
+          break unless keyinput.continue?
+          keyinput.clear
         end
       end
     end
+
+    def listen(&block : Proc(Char, Key?, Array(Char), Nil))
+      listen do |keyinput|
+        yield keyinput.char, keyinput.key, keyinput.sequence
+      end
+    end
+
+    # def listen(&block : Proc(Char, Key?, Array(Char), Nil))
+    #   with_raw_input do
+    #     sequence = [] of Char
+    #     while char = next_char
+    #       sequence << char if char
+    #       key = nil
+    #       if char.control?
+    #         key = Key.read_control(char) { next_char(true) { |c| sequence << c } }
+    #       end
+    #       begin
+    #         yield char, key, sequence.dup
+    #       rescue e : EndListen
+    #         break
+    #       end
+    #       sequence.clear
+    #     end
+    #   end
+    # end
   end
 end

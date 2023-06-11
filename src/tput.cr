@@ -50,7 +50,7 @@ class Tput
   include JSON::Serializable
   include Crystallabs::Helpers::Logging
 
-  class EndListenBlock < Exception; end
+  class EndListen < Exception; end
 
   ESC  = "\e"
   CSI7 = "\e["
