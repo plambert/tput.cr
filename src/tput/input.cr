@@ -11,6 +11,14 @@ class Tput
       end
     end
 
+    def control?
+      if c = @char
+        c.control?
+      else
+        false
+      end
+    end
+
     def finish
       @end_of_input = true
     end
