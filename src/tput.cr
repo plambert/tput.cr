@@ -60,7 +60,7 @@ class Tput
   OSC7 = "\e]"
   OSC8 = "\x9d"
 
-  DEFAULT_SCREEN_SIZE = Size.new 80, 24 # Opinions vary: 24, 25, 27
+  # DEFAULT_SCREEN_SIZE = Size.new 80, 24 # Opinions vary: 24, 25, 27
 
   @[JSON::Field(ignore: true)]
   property input : IO
