@@ -155,11 +155,11 @@ class Tput
       end
     end
 
-    def listen(&block : Proc(Char, Key?, Array(Char), Nil))
-      listen do |keyinput|
-        yield keyinput.char, keyinput.key, keyinput.sequence
-      end
-    end
+    # def listen(&block : Proc(Char, Key?, Array(Char), Nil))
+    #   listen do |keyinput|
+    #     yield keyinput.char, keyinput.key, keyinput.sequence
+    #   end
+    # end
 
     # def listen(&block : Proc(Char, Key?, Array(Char), Nil))
     #   with_raw_input do
