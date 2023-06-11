@@ -48,7 +48,7 @@ class Tput
       else
         io << "NIL"
       end
-      @sequence.to_s(io)
+      @sequence.to_s(io) if @sequence.size > 1
       if @end_of_input
         io << "(END)"
       end
