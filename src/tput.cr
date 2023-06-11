@@ -50,6 +50,8 @@ class Tput
   include JSON::Serializable
   include Crystallabs::Helpers::Logging
 
+  class EndListenBlock < Error; end
+
   ESC  = "\e"
   CSI7 = "\e["
   CSI8 = "\x9b"

@@ -87,7 +87,11 @@ class Tput
           if char.control?
             key = Key.read_control(char) { next_char(true) { sequence } }
           end
-          yield char, key, sequence.dup
+          begin
+            yield char, key, sequence.dup
+          rescue e : EndListenBlock
+            break
+          end
           sequence.clear
         end
       end
