@@ -30,6 +30,22 @@ class Tput
     def clear
       @sequence.clear
     end
+
+    def to_s(io)
+      io << "KeyInput["
+      if k = @key
+        k.to_s(io)
+      elsif c = @char
+        c.to_s(io)
+      else
+        io << "NIL"
+      end
+      @sequence.to_s(io)
+      if @end_of_input
+        io << "(END)"
+      end
+      io << ']'
+    end
   end
 
   module Input
